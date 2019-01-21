@@ -66,29 +66,32 @@ X_test = sc.fit_transform(x_test);
 
 
 #BEST PARAMS
-
-from sklearn.model_selection import GridSearchCV
-from sklearn.datasets import make_classification
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import RandomizedSearchCV
+from scipy.stats import randint as sp_randint
 # Build a classification task using 3 informative features
 
-rfc = RandomForestClassifier(max_features= 'sqrt' ,n_estimators=50, oob_score = True) 
-
-param_grid ={
- 'max_depth': [20,30],
- 'max_features': [ 'sqrt', 'log2'],
- 'min_samples_leaf': [4],
- 'min_samples_split': [ 10],
- 'n_estimators': [1200, 1400]}
+# build a classifier
+clf = RandomForestClassifier(n_estimators=20)
 
 
-c, r = y_train.shape
-y_train = y_train.values.reshape(c,)
+# specify parameters and distributions to sample from
+param_dist = {
+              "n_estimators":sp_randint(10,2100), 
+              "max_depth": [10,20],
+              "max_features": sp_randint(1, 41),
+              "min_samples_split": sp_randint(2, 41),
+              "criterion": ["gini", "entropy"]}
 
-CV_rfc = GridSearchCV(estimator=rfc, param_grid=param_grid, cv= 3,verbose=5)
-CV_rfc.fit(X_train,y_train)
-bestparams = CV_rfc.best_params_
-print (CV_rfc.best_params_)
+# run randomized search
+n_iter_search = 2
+random_search = RandomizedSearchCV( clf, param_distributions=param_dist,
+                                   n_iter=n_iter_search, cv=5)
+
+random_search.fit(X_train, y_train)
+
+bestparams = random_search.best_params_
+print (bestparams)
 
 
 #EĞİTİM
