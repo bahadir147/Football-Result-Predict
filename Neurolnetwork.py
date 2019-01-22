@@ -69,6 +69,14 @@ X_train = sc.fit_transform(x_train)
 X_test = sc.fit_transform(x_test);
 
 
+
+#KNeighborsClassifier
+from sklearn.neighbors import KNeighborsClassifier
+clf = KNeighborsClassifier(n_neighbors=150)
+clf.fit(X_train, y_train.values.ravel())
+print("KNeighborsClassifier :" ,clf.score(X_test,y_test.values.ravel()))
+
+
 #Native Bayes
 from sklearn.naive_bayes import GaussianNB
 gnb = GaussianNB()
@@ -84,6 +92,7 @@ print("MLPClassifier :" ,clf.score(X_test,y_test.values.ravel()))
 #labelencoder_X.transform(veriler.iloc[:,6:7])
 #print(list(labelencoder_X.inverse_transform(clf.classes_)))
 #print(clf.predict_proba(X_test))
+
 
 
 #Lineer Regresion
@@ -144,3 +153,4 @@ from sklearn.ensemble import AdaBoostClassifier
 clf = AdaBoostClassifier(n_estimators=500)
 clf.fit(X_train, y_train.values.ravel())
 print("AdaBoostClassifier :" ,clf.score(X_test,y_test.values.ravel()))
+
