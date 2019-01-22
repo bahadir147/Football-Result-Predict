@@ -53,7 +53,7 @@ s=pd.concat([sonuc3,sonuc4,sonuc5],axis=1)
 
 
 
-x_train,x_test,y_train,y_test = train_test_split(s,sonuc,test_size=0.20,random_state=0)
+x_train,x_test,y_train,y_test = train_test_split(s,sonuc,test_size=0.25,random_state=0)
 
 y_train = y_train.astype('int')
 y_test = y_test.astype('int')
@@ -71,35 +71,39 @@ from sklearn.model_selection import RandomizedSearchCV
 from scipy.stats import randint as sp_randint
 # Build a classification task using 3 informative features
 
+
 # build a classifier
-clf = RandomForestClassifier(n_estimators=20)
+bestparams={}
+if __name__ == '__main__':
+    clf = RandomForestClassifier(n_estimators=20,random_state=0)
 
 
 # specify parameters and distributions to sample from
-param_dist = {
-              "n_estimators":sp_randint(10,2100), 
-              "max_depth": [10,20],
+    param_dist = {
+              'bootstrap': [True, False],
+              "n_estimators":sp_randint(10,3000), 
+              'max_depth': [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, None],
               "max_features": sp_randint(1, 41),
               "min_samples_split": sp_randint(2, 41),
-              "criterion": ["gini", "entropy"]}
+              'min_samples_leaf': sp_randint(2, 30),
+              "criterion": ["gini", "entropy"]
+              }
 
 # run randomized search
-n_iter_search = 2
-random_search = RandomizedSearchCV( clf, param_distributions=param_dist,
-                                   n_iter=n_iter_search, cv=5)
+    n_iter_search = 10
+    random_search = RandomizedSearchCV(clf, param_distributions=param_dist,
+                                   n_iter=n_iter_search, cv=4, verbose =10, n_jobs=-1)
 
-random_search.fit(X_train, y_train)
-
-bestparams = random_search.best_params_
-print (bestparams)
-
+    random_search.fit(X_train, y_train.values.ravel())
+    bestparams = random_search.best_params_
+    print(random_search.best_score_)
 
 #EĞİTİM
 from sklearn.ensemble import RandomForestClassifier
 
 clf = RandomForestClassifier(**bestparams);
 
-y_pred=clf.fit(X_train, y_train)
+y_pred=clf.fit(X_train, y_train.values.ravel())
 
 accuracy = y_pred.score(X_test,y_test)
 

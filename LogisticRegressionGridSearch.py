@@ -6,7 +6,6 @@ This is a temporary script file.
 """
 #Kütüphaneler.
 import numpy as np
-import matplotlib.pyplot as plt
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
@@ -53,11 +52,12 @@ s=pd.concat([sonuc3,sonuc4,sonuc5],axis=1)
 
 
 
-x_train,x_test,y_train,y_test = train_test_split(s,sonuc,test_size=0.20,random_state=0)
+x_train,x_test,y_train,y_test = train_test_split(s,sonuc,test_size=0.33,random_state=0)
 
 y_train = y_train.astype('int')
-y_test = y_test.astype('int')
 
+
+y_test = y_test.astype('int')
 from sklearn.preprocessing import StandardScaler
 
 sc=StandardScaler()
@@ -68,41 +68,45 @@ X_test = sc.fit_transform(x_test);
 #BEST PARAMS
 
 from sklearn.model_selection import GridSearchCV
-from sklearn.datasets import make_classification
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
 # Build a classification task using 3 informative features
 
 bestparams={}
 if __name__ == '__main__':
-    rfc = RandomForestClassifier(max_features= 'sqrt' ,n_estimators=50, oob_score = True) 
+    logreg=LogisticRegression()
 
-    param_grid ={'bootstrap': [True, False],
- 'max_depth': [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, None],
- 'max_features': ['auto', 'sqrt'],
- 'min_samples_leaf': [1, 2, 4],
- 'min_samples_split': [2, 5, 10],
- 'n_estimators': [200, 400, 600, 800, 1000, 1200, 1400, 1600, 1800, 2000]}
-
-
-    c, r = y_train.shape
-    y_train = y_train.values.reshape(c,)
-
-    CV_rfc = GridSearchCV(estimator=rfc, param_grid=param_grid, cv= 5,verbose=20,n_jobs=-1)
-    CV_rfc.fit(X_train,y_train)
-    bestparams = CV_rfc.best_params_
-    print (CV_rfc.best_params_)
-
+    grid={
+            "C":np.logspace(-3,3,7,1,6), 
+            "penalty":["l1","l2"],
+            'fit_intercept':[True, False],
+            'intercept_scaling':[0.1,0.2,0.25,1,2],
+            "max_iter":[300,400,500,600,1000,2000],
+            "tol":[1e-4,1e-5,1e-3]
+            }
+    
+    logreg=LogisticRegression()
+    logreg_cv=GridSearchCV(logreg,grid,cv=5,verbose=10,n_jobs=-1)
+    logreg_cv.fit(x_train,y_train.values.ravel())
+    
+    
+#    c, r = y_train.shape
+#    y_train = y_train.values.reshape(c,)
+#
+#    CV_rfc = GridSearchCV(estimator=rfc, param_grid=param_grid, cv= 5,verbose=20,n_jobs=-1)
+#    CV_rfc.fit(X_train,y_train)
+    bestparams = logreg_cv.best_params_
+    print("tuned hpyerparameters :(best parameters) ",logreg_cv.best_params_)
+    print("accuracy :",logreg_cv.best_score_)
 
 #EĞİTİM
-from sklearn.ensemble import RandomForestClassifier
+    
+logreg2 = LogisticRegression(C=1,penalty="l2")
 
-clf = RandomForestClassifier(**bestparams);
+y_pred = logreg2.fit(x_train,y_train.values.ravel())
 
-y_pred=clf.fit(X_train, y_train)
+print("Accuracyy: ",logreg2.score(x_test,y_test))
 
-accuracy = y_pred.score(X_test,y_test)
 
-print(accuracy)
 
 
 
