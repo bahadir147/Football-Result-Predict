@@ -2,8 +2,9 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
-from sklearn.preprocessing import Imputer
+from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler
+import numpy as np
 
 
 def GetData(dataFileName):
@@ -15,7 +16,7 @@ def GetData(dataFileName):
 
     # Veri Ön İşleme
 
-    imputer = Imputer(missing_values='NaN', strategy='mean', axis=0)
+    imputer = SimpleImputer(missing_values=np.nan, strategy='mean')
 
     sayisalVeriler = veriler.iloc[:, 22:]
 
@@ -46,7 +47,7 @@ def GetData(dataFileName):
         DataCount), columns=['HomeTeam'])
     sonuc4 = pd.DataFrame(data=RakipTakimlar, index=range(
         DataCount), columns=['AwayTeam'])
-    sonuc5 = pd.DataFrame(data=sayisalVeriler, index=range(DataCount), columns=['ExHAv', 'ExDAv', 'ExAAv', 'B365H', 'B365D', 'B365A', 'BWH', 'BWD', 'BWA', 'IWH', 'IWD', 'IWA', 'PSH', 'PSD', 'PSA', 'WHH', 'WHD', 'WHA', 'VCH', 'VCD', 'VCA', 'Bb1X2', 'BbMxH', 'BbAvH', 'BbMxD', 'BbAvD', 'BbMxA', 'BbAvA', 'BbOU', 'BbMx>2.5', 'BbAv>2.5', 'BbMx<2.5', 'BbAv<2.5', 'BbAH', 'BbAHh', 'BbMxAHH', 'BbAvAHH', 'BbMxAHA', 'BbAvAHA', 'PSCH', 'PSCD', 'PSCA'
+    sonuc5 = pd.DataFrame(data=sayisalVeriler, index=range(DataCount), columns=['B365H', 'B365D', 'B365A', 'BWH', 'BWD', 'BWA', 'IWH', 'IWD', 'IWA', 'PSH', 'PSD', 'PSA', 'WHH', 'WHD', 'WHA', 'VCH', 'VCD', 'VCA', 'Bb1X2', 'BbMxH', 'BbAvH', 'BbMxD', 'BbAvD', 'BbMxA', 'BbAvA', 'BbOU', 'BbMx>2.5', 'BbAv>2.5', 'BbMx<2.5', 'BbAv<2.5', 'BbAH', 'BbAHh', 'BbMxAHH', 'BbAvAHH', 'BbMxAHA', 'BbAvAHA', 'PSCH', 'PSCD', 'PSCA'
                                                                                 ])
 
     s = pd.concat([sonuc5])

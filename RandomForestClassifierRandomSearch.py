@@ -1,5 +1,4 @@
 # Kütüphaneler.
-from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import RandomizedSearchCV
 from sklearn.ensemble import RandomForestClassifier
 import numpy as np
@@ -7,12 +6,13 @@ import numpy as np
 #!/usr/bin/python
 import GetData
 import DataSaveLoad
+import Accuracy
 
 
 TunnigData = False
 
 
-Datas = GetData.GetData('Data\FTOTAL(1234) Extra.xls')
+Datas = GetData.GetData('Data\GlobalData.xlsx')
 
 X_train = Datas[0]
 y_train = Datas[1]
@@ -26,22 +26,19 @@ y_test = Datas[3]
 if TunnigData == False:
 
     clf = RandomForestClassifier(bootstrap=True, class_weight=None, criterion='gini',
-                                 max_depth=10, max_features='auto', max_leaf_nodes=None,
+                                 max_depth=20, max_features='auto', max_leaf_nodes=None,
                                  min_impurity_decrease=0.0, min_impurity_split=None,
-                                 min_samples_leaf=3, min_samples_split=3,
-                                 min_weight_fraction_leaf=0.0, n_estimators=100, n_jobs=-1,
+                                 min_samples_leaf=2, min_samples_split=2,
+                                 min_weight_fraction_leaf=0.0, n_estimators=673, n_jobs=None,
                                  oob_score=False, random_state=None, verbose=0,
                                  warm_start=False)
 
     clf.fit(X_train, y_train.values.ravel())
 
-    print("Training Accuracy = ", clf.score(X_train, y_train.values.ravel()))
-    print("Test Accuracy = ", clf.score(X_test, y_test.values.ravel()))
+    #print("Training Accuracy = ", clf.score(X_train, y_train.values.ravel()))
+    #print("Test Accuracy = ", clf.score(X_test, y_test.values.ravel()))
 
-    y_pred = clf.predict(X_test)
-    conf_mat = confusion_matrix(y_test, y_pred)
-    print("Matrix:")
-    print(conf_mat)
+    Accuracy.evaluate(clf, X_test, y_test.values.ravel(), X_train, y_train.values.ravel())
 
     # SAVE DATA
     dataFileName = "RandomForestClassifier"
@@ -82,7 +79,7 @@ if TunnigData == True:
         # Random search of parameters, using 3 fold cross validation,
         # search across 100 different combinations, and use all available cores
         rf_random = RandomizedSearchCV(estimator=rf, param_distributions=random_grid,
-                                       n_iter=250, cv=4, verbose=5, random_state=0, n_jobs=-1)
+                                       n_iter=5, cv=4, verbose=5, random_state=0, n_jobs=-1)
         # Fit the random search model
         rf_random.fit(X_train, y_train.values.ravel())
         print("Best Score: ", rf_random.best_score_)

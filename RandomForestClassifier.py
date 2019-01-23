@@ -1,17 +1,18 @@
 # Kütüphaneler.
-from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import GridSearchCV
 from sklearn.ensemble import RandomForestClassifier
+import numpy as np
 
 #!/usr/bin/python
 import GetData
 import DataSaveLoad
+import Accuracy
 
 
 TunnigData = False
 
 
-Datas = GetData.GetData('Data\FTOTAL(1234) Extra.xls')
+Datas = GetData.GetData('Data\GlobalData.xlsx')
 
 X_train = Datas[0]
 y_train = Datas[1]
@@ -23,24 +24,23 @@ y_test = Datas[3]
 # print(y_train)
 
 if TunnigData == False:
-
-    clf = RandomForestClassifier(bootstrap=False, class_weight=None, criterion='gini',
-                                 max_depth=12, max_features='auto', max_leaf_nodes=None,
+    clf = RandomForestClassifier(bootstrap=True, class_weight=None, criterion='gini',
+                                 max_depth=10, max_features=2, max_leaf_nodes=None,
                                  min_impurity_decrease=0.0, min_impurity_split=None,
-                                 min_samples_leaf=3, min_samples_split=3,
-                                 min_weight_fraction_leaf=0.0, n_estimators=100, n_jobs=-1,
-                                 oob_score=False, random_state=0, verbose=0,
+                                 min_samples_leaf=4, min_samples_split=10,
+                                 min_weight_fraction_leaf=0.0, n_estimators=200, n_jobs=-1,
+                                 oob_score=False, random_state=None, verbose=0,
                                  warm_start=False)
 
     clf.fit(X_train, y_train.values.ravel())
 
-    print("Training Accuracy = ", clf.score(X_train, y_train.values.ravel()))
-    print("Test Accuracy = ", clf.score(X_test, y_test.values.ravel()))
+    clf.fit(X_train, y_train.values.ravel())
 
-    y_pred = clf.predict(X_test)
-    conf_mat = confusion_matrix(y_test, y_pred)
-    print("Matrix:")
-    print(conf_mat)
+    #print("Training Accuracy = ", clf.score(X_train, y_train.values.ravel()))
+    #print("Test Accuracy = ", clf.score(X_test, y_test.values.ravel()))
+
+    Accuracy.evaluate(clf, X_test, y_test.values.ravel(),
+                      X_train, y_train.values.ravel())
 
     # SAVE DATA
     dataFileName = "RandomForestClassifier"
@@ -51,15 +51,14 @@ if TunnigData == False:
 if TunnigData == True:
     if __name__ == '__main__':
         # Set the parameters by cross-validation
-        tuned_parameters = {'bootstrap': [True, False],
-                            'max_depth': [10, 20],
-                            'max_features': ['auto', 'sqrt'],
-                            'min_samples_leaf': [2, 4],
-                            'min_samples_split': [2, 5, 10],
-                            'n_estimators': [200, 600, 1000],
-                            'min_weight_fraction_leaf': [0.0, 0.3, 0.5],
-                            'min_impurity_decrease': [0.0, 0.5, 1.0]
-                            }
+        tuned_parameters = {
+            'bootstrap': [True],
+            'max_depth': [10, 20, 30, 40],
+            'max_features': [2, 3],
+            'min_samples_leaf': [3, 4, 5],
+            'min_samples_split': [8, 10, 12],
+            'n_estimators': [100, 200, 300, 1000]
+        }
 
         clf = GridSearchCV(RandomForestClassifier(n_jobs=-1), tuned_parameters, cv=4,
                            n_jobs=-1, verbose=1)
