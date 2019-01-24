@@ -53,11 +53,11 @@ def GetData(dataFileName):
     s = pd.concat([sonuc5])
 
     x_train, x_test, y_train, y_test = train_test_split(
-        s, sonuc, test_size=0.2, random_state=0)
+        s, sonuc, test_size=0.33, random_state=0)
 
-    #sc = StandardScaler()
-    #x_train = sc.fit_transform(x_train.astype(float))
-    #x_test = sc.transform(x_test.astype(float))
+    sc = StandardScaler()
+    x_train = sc.fit_transform(x_train.astype(float))
+    x_test = sc.transform(x_test.astype(float))
 
     y_train = y_train.astype(int)
     y_test = y_test.astype(int)
