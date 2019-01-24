@@ -24,13 +24,13 @@ y_test = Datas[3]
 # print(y_train)
 
 if TunnigData == False:
-    clf = RandomForestClassifier(bootstrap=True, class_weight=None, criterion='gini',
-                                 max_depth=5, max_features=3, max_leaf_nodes=None,
-                                 min_impurity_decrease=0.0, min_impurity_split=None,
-                                 min_samples_leaf=1, min_samples_split=2,
-                                 min_weight_fraction_leaf=0.0, n_estimators=300, n_jobs=-1,
-                                 oob_score=False, random_state=None, verbose=0,
-                                 warm_start=False)
+    clf = RandomForestClassifier(bootstrap=True, class_weight=None, criterion='entropy',
+            max_depth=5, max_features=2,
+            min_impurity_decrease=0.0,
+            min_samples_leaf=1, min_samples_split=2,
+            min_weight_fraction_leaf=0.0, n_estimators=300, n_jobs=-1,
+            oob_score=False, random_state=None, verbose=0,
+            warm_start=False)
 
     clf.fit(X_train, y_train.values.ravel())
 
@@ -51,15 +51,15 @@ if TunnigData == True:
         # Set the parameters by cross-validation
         tuned_parameters = {
             'bootstrap': [True, False],
-            'max_depth': [5, 20, 30, 40, 50],
-            'max_features': [2, 3, 4, 5],
+            'max_depth': [5, 10,20],
+            'max_features': [2, 3],
             # 'min_samples_leaf': [3, 4, 5],
             # 'min_samples_split': [8, 10, 12],
-            'n_estimators': [100, 200, 300,  400, 500, 1000, 200]
+            'n_estimators': [100, 200, 300]
         }
 
         clf = GridSearchCV(RandomForestClassifier(n_jobs=-1), tuned_parameters, cv=4,
-                           n_jobs=-1, verbose=1)
+                           n_jobs=-1, verbose=10)
         clf.fit(X_train, y_train.values.ravel())
         print("Best Score: ", clf.best_score_)
         print("Best Estimatör: ", clf.best_estimator_)
