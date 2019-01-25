@@ -1,13 +1,12 @@
 # Kütüphaneler.
+from sklearn.feature_selection import SelectKBest
+from sklearn.feature_selection import chi2
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import LabelEncoder
-#from sklearn.impute import SimpleImputer
-#from sklearn.preprocessing import *
-#import numpy as np
-
-
- 
+from sklearn.preprocessing import LabelEncoder, StandardScaler, MinMaxScaler
+# from sklearn.impute import SimpleImputer
+# from sklearn.preprocessing import *
+# import numpy as np
 
 
 def GetData(dataFileName):
@@ -19,17 +18,17 @@ def GetData(dataFileName):
 
     # Veri Ön İşleme
 
-    #imputer = SimpleImputer(missing_values=np.nan, strategy='median')
+    # imputer = SimpleImputer(missing_values=np.nan, strategy='median')
 
     sayisalVeriler = veriler.iloc[:, 22:]
 
-    #imputer = imputer.fit(sayisalVeriler)
-    #sayisalVeriler = imputer.transform(sayisalVeriler)
+    # imputer = imputer.fit(sayisalVeriler)
+    # sayisalVeriler = imputer.transform(sayisalVeriler)
 
     EvSahibitakimlar = veriler.iloc[:, 2:3]
     RakipTakimlar = veriler.iloc[:, 3:4]
     FullTimeResult = veriler.iloc[:, 6:7]
-    #HalfTimeResult = veriler.iloc[:, 9:10]
+    # HalfTimeResult = veriler.iloc[:, 9:10]
 
     labelencoder_X = LabelEncoder()
 
@@ -57,16 +56,20 @@ def GetData(dataFileName):
                                    'BbMx<2.5', 'BbAv<2.5', 'BbAH', 'BbAHh', 'BbMxAHH', 'BbAvAHH', 'BbMxAHA',
                                    'BbAvAHA', 'PSCH', 'PSCD', 'PSCA'])
 
-    s = pd.concat([sonuc5],axis=1)
+    s = pd.concat([sonuc5], axis=1)
+
+    s = SelectKBest(chi2, k=2).fit_transform(s, sonuc)
+
+    print(s)
 
     x_train, x_test, y_train, y_test = train_test_split(
         s, sonuc, test_size=0.33, random_state=0)
 
-    #sc = StandardScaler()
+   # sc = StandardScaler()
 
-    #sc = MinMaxScaler()
-    #x_train = sc.fit_transform(x_train.astype(float))
-    #x_test = sc.transform(x_test.astype(float))
+    sc = MinMaxScaler()
+    x_train = sc.fit_transform(x_train.astype(float))
+    x_test = sc.transform(x_test.astype(float))
 
     y_train = y_train.astype(int)
     y_test = y_test.astype(int)
