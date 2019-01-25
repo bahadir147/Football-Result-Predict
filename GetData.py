@@ -58,7 +58,7 @@ def GetData(dataFileName):
 
     s = pd.concat([sonuc5], axis=1)
 
-    s = SelectKBest(chi2, k=2).fit_transform(s, sonuc)
+    s = SelectKBest(chi2, k=10).fit_transform(s, sonuc)
 
     print(s)
 

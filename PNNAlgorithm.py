@@ -17,7 +17,7 @@ x_test = Datas[2]
 y_test = Datas[3].values
 
 
-pnn = algorithms.PNN(std=0.8, verbose=False, batch_size=100)
+pnn = algorithms.PNN(std=0.5, verbose=False, batch_size=35)
 pnn.train(x_train, y_train)
 
 y_predicted = pnn.predict(x_test)
